@@ -15,10 +15,14 @@ const User = {
       bcrypt.hash(user.password, 10, (err, hash) => {
         if (err) return reject(err);
         
-        const sql = `INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)`;
-        db.run(sql, [user.username, hash, user.role || 'user'], function(err) {
+        const sql = `INSERT INTO users (username, password_hash, email, role) VALUES (?, ?, ?, ?)`;
+        db.run(sql, [user.username, hash, user.email, user.role || 'user'], function(err) {
           if (err) return reject(err);
-          resolve(this.lastID);
+          const selectSql = `SELECT id, username, email, role, created_at FROM users WHERE id = ?`;
+          db.get(selectSql, [this.lastID], (err2, row) => {
+            if (err2) return reject(err2);
+            resolve(row);
+          });
         });
       });
     });
@@ -31,7 +35,7 @@ const User = {
    */
   findById: (id) => {
     return new Promise((resolve, reject) => {
-      const sql = `SELECT id, username, role, created_at FROM users WHERE id = ?`;
+      const sql = `SELECT id, username, email, role, created_at FROM users WHERE id = ?`;
       db.get(sql, [id], (err, row) => {
         if (err) return reject(err);
         resolve(row);
