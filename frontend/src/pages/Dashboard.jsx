@@ -22,7 +22,7 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../hooks/useToast'
 import ToastContainer from '../components/ToastContainer'
 import LowStockAlerts from '../components/LowStockAlerts.jsx'
-import DashboardCharts from '../components/DashboardCharts.jsx'
+import DashboardChartsFallback from '../components/DashboardChartsFallback.jsx'
 
 /**
  * Page du tableau de bord principal
@@ -278,7 +278,7 @@ function Dashboard() {
       </Card>
 
       {/* Graphiques et analyses */}
-      <DashboardCharts />
+      <DashboardChartsFallback />
 
       {/* Container des notifications toast */}
       <ToastContainer toasts={toasts} removeToast={removeToast} />
