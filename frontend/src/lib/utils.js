@@ -7,11 +7,5 @@ import { twMerge } from "tailwind-merge"
  * @returns {string} - Classes CSS optimisées
  */
 export function cn(...inputs) {
-  try {
-    return twMerge(clsx(inputs))
-  } catch (error) {
-    console.error('Erreur dans la fonction cn:', error)
-    // Fallback simple si il y a une erreur
-    return inputs.filter(Boolean).join(' ')
-  }
+  return twMerge(clsx(inputs))
 }

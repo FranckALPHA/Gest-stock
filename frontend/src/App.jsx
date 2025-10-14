@@ -4,7 +4,6 @@ import ProtectedRoute from './components/ProtectedRoute.jsx'
 import Login from './pages/Login.jsx'
 import Products from './pages/Products.jsx'
 import Categories from './pages/Categories.jsx'
-import TestShadcn from './components/TestShadcn.jsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card.jsx'
 import { Badge } from './components/ui/badge.jsx'
 import { Separator } from './components/ui/separator.jsx'
@@ -244,7 +243,6 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/test" element={<TestShadcn />} />
       <Route
         path="/"
         element={
