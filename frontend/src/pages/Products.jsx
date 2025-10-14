@@ -332,10 +332,10 @@ function Products() {
         {isAdmin() && (
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Nouveau Produit
-              </Button>
+        <Button>
+          <Plus className="mr-2 h-4 w-4" />
+          Nouveau Produit
+        </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
               <DialogHeader>
@@ -406,7 +406,7 @@ function Products() {
 
                 {/* Prix */}
                 <div className="space-y-2">
-                  <Label htmlFor="price">Prix (€)</Label>
+                  <Label htmlFor="price">Prix (FCFA)</Label>
                   <Input
                     id="price"
                     type="number"
@@ -501,15 +501,15 @@ function Products() {
             <div className="space-y-2">
               <Label htmlFor="search">Recherche</Label>
               <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
                   id="search"
                   placeholder="Nom ou description..."
                   value={filters.search}
                   onChange={(e) => handleFilterChange('search', e.target.value)}
-                  className="pl-8"
-                />
-              </div>
+            className="pl-8"
+          />
+        </div>
             </div>
 
             {/* Catégorie */}
@@ -546,7 +546,7 @@ function Products() {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+      </div>
 
             {/* Actions */}
             <div className="space-y-2">
@@ -593,28 +593,28 @@ function Products() {
             </div>
           ) : (
             <>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nom</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Catégorie</TableHead>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nom</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead>Catégorie</TableHead>
                     <TableHead>Fournisseur</TableHead>
                     <TableHead>Prix</TableHead>
-                    <TableHead>Stock</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+                  <TableHead>Stock</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                   {products.map((product) => (
-                    <TableRow key={product.id}>
-                      <TableCell className="font-medium">
-                        {product.name}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {product.description || 'Aucune description'}
-                      </TableCell>
-                      <TableCell>
+                  <TableRow key={product.id}>
+                    <TableCell className="font-medium">
+                      {product.name}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {product.description || 'Aucune description'}
+                    </TableCell>
+                    <TableCell>
                         <Badge variant="outline">
                           {product.category_name || 'Sans catégorie'}
                         </Badge>
@@ -626,11 +626,11 @@ function Products() {
                       </TableCell>
                       <TableCell>
                         <span className="font-medium">
-                          {product.price ? `${product.price.toFixed(2)} €` : 'N/A'}
+                          {product.price ? `${product.price.toFixed(2)} FCFA` : 'N/A'}
                         </span>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
+                    </TableCell>
+                    <TableCell>
+                      <Badge 
                           variant={
                             product.quantity <= (product.alert_threshold || 10)
                               ? "destructive"
@@ -641,10 +641,10 @@ function Products() {
                           {product.quantity <= (product.alert_threshold || 10) && (
                             <AlertTriangle className="ml-1 h-3 w-3" />
                           )}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end space-x-2">
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end space-x-2">
                           {isAdmin() && (
                             <>
                               <Button 
@@ -652,23 +652,23 @@ function Products() {
                                 size="sm"
                                 onClick={() => openEditDialog(product)}
                               >
-                                <Edit className="h-4 w-4" />
-                              </Button>
+                          <Edit className="h-4 w-4" />
+                        </Button>
                               <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={() => handleDeleteProduct(product.id)}
                               >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                             </>
                           )}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
 
               {/* Pagination */}
               {pagination.totalPages > 1 && (
@@ -775,7 +775,7 @@ function Products() {
 
             {/* Prix */}
             <div className="space-y-2">
-              <Label htmlFor="edit-price">Prix (€)</Label>
+              <Label htmlFor="edit-price">Prix (FCFA)</Label>
               <Input
                 id="edit-price"
                 type="number"

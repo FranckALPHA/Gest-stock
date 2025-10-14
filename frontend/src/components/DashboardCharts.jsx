@@ -261,7 +261,7 @@ function DashboardCharts() {
                   ))}
                 </Pie>
                 <Tooltip 
-                  formatter={(value) => [`${value} €`, 'Valeur']}
+                  formatter={(value) => [`${value} FCFA`, 'Valeur']}
                   labelFormatter={(label) => `Catégorie: ${label}`}
                 />
               </PieChart>
