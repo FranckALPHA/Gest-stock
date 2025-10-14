@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plus, Edit, Trash2, Search, Filter, ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-react'
+import { Plus, Edit, Trash2, Search, Filter, ChevronLeft, ChevronRight, AlertTriangle, Printer } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
@@ -16,6 +16,7 @@ import { supplierService } from '../services/supplier.api.js'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../hooks/useToast'
 import ToastContainer from '../components/ToastContainer'
+import PrintButton from '../components/PrintButton'
 
 /**
  * Page de gestion des produits avec pagination et filtres avancés
@@ -319,6 +320,48 @@ function Products() {
     loadProducts()
   }, [filters])
 
+  /**
+   * Génère le HTML du tableau des produits pour l'impression
+   * @returns {string} HTML du tableau
+   */
+  const generateProductsTableHTML = () => {
+    const totalValue = products.reduce((sum, product) => sum + (product.price * (product.quantity || 0)), 0)
+    
+    return `
+      <div class="print-summary">
+        <p><strong>Total des produits :</strong> ${products.length}</p>
+        <p><strong>Valeur totale du stock :</strong> ${totalValue.toFixed(2)} FCFA</p>
+      </div>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Description</th>
+            <th>Catégorie</th>
+            <th>Fournisseur</th>
+            <th>Prix (FCFA)</th>
+            <th>Stock</th>
+            <th>Seuil</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${products.map(product => `
+            <tr>
+              <td>${product.name}</td>
+              <td>${product.description || 'N/A'}</td>
+              <td>${product.category_name || 'Sans catégorie'}</td>
+              <td>${product.supplier_name || 'Sans fournisseur'}</td>
+              <td>${product.price ? product.price.toFixed(2) : 'N/A'}</td>
+              <td>${product.quantity || 0}</td>
+              <td>${product.alert_threshold || 10}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `
+  }
+
   return (
     <div className="space-y-6">
       {/* En-tête de la page */}
@@ -329,14 +372,21 @@ function Products() {
             Gérez les produits de votre stock avec pagination et filtres avancés
           </p>
         </div>
-        {isAdmin() && (
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-            <DialogTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Nouveau Produit
-        </Button>
-            </DialogTrigger>
+        <div className="flex items-center gap-2">
+          <PrintButton
+            title="Liste des Produits"
+            variant="outline"
+          >
+            {generateProductsTableHTML()}
+          </PrintButton>
+          {isAdmin() && (
+            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Nouveau Produit
+                </Button>
+              </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
               <DialogHeader>
                 <DialogTitle>Créer un nouveau produit</DialogTitle>
@@ -464,7 +514,8 @@ function Products() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
-        )}
+          )}
+        </div>
       </div>
 
       <Separator />

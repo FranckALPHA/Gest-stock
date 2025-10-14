@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plus, ArrowUp, ArrowDown, Package, Calendar, User } from 'lucide-react'
+import { Plus, ArrowUp, ArrowDown, Package, Calendar, User, Printer } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
@@ -15,6 +15,7 @@ import { productService } from '../services/product.api.js'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../hooks/useToast'
 import ToastContainer from '../components/ToastContainer'
+import PrintButton from '../components/PrintButton'
 
 /**
  * Page de gestion des mouvements de stock
@@ -148,6 +149,48 @@ function StockMovements() {
     loadProducts()
   }, [])
 
+  /**
+   * Génère le HTML du tableau des mouvements pour l'impression
+   * @returns {string} HTML du tableau
+   */
+  const generateMovementsTableHTML = () => {
+    const totalEntries = movements.filter(m => m.type === 'in').reduce((sum, m) => sum + m.quantity, 0)
+    const totalExits = movements.filter(m => m.type === 'out').reduce((sum, m) => sum + m.quantity, 0)
+    
+    return `
+      <div class="print-summary">
+        <p><strong>Total des mouvements :</strong> ${movements.length}</p>
+        <p><strong>Total des entrées :</strong> ${totalEntries} unités</p>
+        <p><strong>Total des sorties :</strong> ${totalExits} unités</p>
+      </div>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Produit</th>
+            <th>Type</th>
+            <th>Quantité</th>
+            <th>Note</th>
+            <th>Utilisateur</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${movements.map(movement => `
+            <tr>
+              <td>${new Date(movement.created_at).toLocaleDateString('fr-FR')}</td>
+              <td>${movement.product_name || 'N/A'}</td>
+              <td>${movement.type === 'in' ? 'Entrée' : 'Sortie'}</td>
+              <td>${movement.quantity}</td>
+              <td>${movement.note || 'N/A'}</td>
+              <td>${movement.user_name || 'Système'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `
+  }
+
   return (
     <div className="space-y-6">
       {/* En-tête de la page */}
@@ -158,7 +201,14 @@ function StockMovements() {
             Gérez les entrées et sorties de stock
           </p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <div className="flex items-center gap-2">
+          <PrintButton
+            title="Mouvements de Stock"
+            variant="outline"
+          >
+            {generateMovementsTableHTML()}
+          </PrintButton>
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="mr-2 h-4 w-4" />
@@ -259,6 +309,7 @@ function StockMovements() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       <Separator />

@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
-import { AlertTriangle, Package, RefreshCw } from 'lucide-react'
+import { AlertTriangle, Package, RefreshCw, Printer } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
 import { Alert, AlertDescription } from './ui/alert'
 import { productService } from '../services/product.api.js'
 import { useToast } from '../hooks/useToast'
+import PrintButton from './PrintButton'
 
 /**
  * Composant pour afficher les alertes de stock faible
@@ -42,6 +43,44 @@ function LowStockAlerts({ threshold = 10, showHeader = true, maxItems = 5 }) {
   useEffect(() => {
     loadAlerts()
   }, [threshold])
+
+  /**
+   * Génère le HTML du tableau des alertes pour l'impression
+   * @returns {string} HTML du tableau
+   */
+  const generateAlertsTableHTML = () => {
+    return `
+      <div class="print-summary">
+        <p><strong>Seuil d'alerte :</strong> ${threshold} unités</p>
+        <p><strong>Nombre de produits en alerte :</strong> ${alerts.length}</p>
+      </div>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Produit</th>
+            <th>Catégorie</th>
+            <th>Stock Actuel</th>
+            <th>Seuil d'Alerte</th>
+            <th>Fournisseur</th>
+            <th>Prix (FCFA)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${alerts.map(product => `
+            <tr>
+              <td>${product.name}</td>
+              <td>${product.category_name || 'N/A'}</td>
+              <td style="color: red; font-weight: bold;">${product.quantity || 0}</td>
+              <td>${product.alert_threshold || threshold}</td>
+              <td>${product.supplier_name || 'N/A'}</td>
+              <td>${product.price ? product.price.toFixed(2) : 'N/A'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `
+  }
 
   if (loading) {
     return (
@@ -102,9 +141,18 @@ function LowStockAlerts({ threshold = 10, showHeader = true, maxItems = 5 }) {
               <AlertTriangle className="mr-2 h-5 w-5 text-orange-500" />
               Alertes de Stock Faible
             </div>
-            <Button variant="outline" size="sm" onClick={loadAlerts}>
-              <RefreshCw className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <PrintButton
+                title="Rapport de Stock Faible"
+                variant="outline"
+                size="sm"
+              >
+                {generateAlertsTableHTML()}
+              </PrintButton>
+              <Button variant="outline" size="sm" onClick={loadAlerts}>
+                <RefreshCw className="h-4 w-4" />
+              </Button>
+            </div>
           </CardTitle>
           <CardDescription>
             {alerts.length} produit{alerts.length > 1 ? 's' : ''} nécessitant une attention

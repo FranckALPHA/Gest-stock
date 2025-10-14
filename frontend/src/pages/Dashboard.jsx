@@ -8,6 +8,7 @@ import {
   ArrowUp,
   ArrowDown,
   Calendar,
+  Printer,
   User,
   Eye
 } from 'lucide-react'
@@ -21,6 +22,7 @@ import { dashboardService } from '../services/dashboard.api.js'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../hooks/useToast'
 import ToastContainer from '../components/ToastContainer'
+import PrintButton from '../components/PrintButton'
 import LowStockAlerts from '../components/LowStockAlerts.jsx'
 import DashboardCharts from '../components/DashboardCharts.jsx'
 
@@ -99,6 +101,61 @@ function Dashboard() {
     loadDashboardData()
   }, [])
 
+  /**
+   * Génère le HTML du dashboard pour l'impression
+   * @returns {string} HTML du rapport
+   */
+  const generateDashboardHTML = () => {
+    return `
+      <div class="print-summary">
+        <h2>Statistiques Générales</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 20px 0;">
+          <div style="border: 1px solid #ddd; padding: 15px; text-align: center;">
+            <h3>Total Produits</h3>
+            <p style="font-size: 24px; font-weight: bold; margin: 10px 0;">${stats.totalProducts}</p>
+            <p style="color: #666; font-size: 12px;">Produits enregistrés</p>
+          </div>
+          <div style="border: 1px solid #ddd; padding: 15px; text-align: center;">
+            <h3>Stock Total</h3>
+            <p style="font-size: 24px; font-weight: bold; margin: 10px 0;">${stats.totalQuantity}</p>
+            <p style="color: #666; font-size: 12px;">Unités en stock</p>
+          </div>
+          <div style="border: 1px solid #ddd; padding: 15px; text-align: center;">
+            <h3>Valeur Totale</h3>
+            <p style="font-size: 24px; font-weight: bold; margin: 10px 0;">${formatCurrency(stats.totalValue)}</p>
+            <p style="color: #666; font-size: 12px;">Valeur du stock</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="print-summary">
+        <h2>Mouvements Récents</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Produit</th>
+              <th>Type</th>
+              <th>Quantité</th>
+              <th>Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${recentMovements.map(movement => `
+              <tr>
+                <td>${new Date(movement.created_at).toLocaleDateString('fr-FR')}</td>
+                <td>${movement.product_name || 'N/A'}</td>
+                <td>${movement.type === 'in' ? 'Entrée' : 'Sortie'}</td>
+                <td>${movement.quantity}</td>
+                <td>${movement.note || 'N/A'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `
+  }
+
   return (
     <div className="space-y-6">
       {/* En-tête de la page */}
@@ -109,10 +166,18 @@ function Dashboard() {
             Vue d'ensemble de votre gestion de stock
           </p>
         </div>
-        <Button onClick={loadDashboardData} variant="outline">
-          <Activity className="mr-2 h-4 w-4" />
-          Actualiser
-        </Button>
+        <div className="flex items-center gap-2">
+          <PrintButton
+            title="Rapport du Tableau de Bord"
+            variant="outline"
+          >
+            {generateDashboardHTML()}
+          </PrintButton>
+          <Button onClick={loadDashboardData} variant="outline">
+            <Activity className="mr-2 h-4 w-4" />
+            Actualiser
+          </Button>
+        </div>
       </div>
 
       <Separator />
