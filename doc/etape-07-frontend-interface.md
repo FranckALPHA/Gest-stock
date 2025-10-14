@@ -8,12 +8,12 @@
 - **Date de fin :** [À remplir]
 
 ## ✅ Tâches à accomplir
-- [ ] Créer le layout principal avec Sidebar et Navbar
-- [ ] Implémenter la page Dashboard avec statistiques
-- [ ] Créer la page de gestion des produits avec CRUD
-- [ ] Créer la page de gestion des catégories
-- [ ] Créer la page de gestion des fournisseurs
-- [ ] Implémenter la page des mouvements de stock
+- [ok] Créer le layout principal avec Sidebar et Navbar
+- [ok] Implémenter la page Dashboard avec statistiques
+- [ok] Créer la page de gestion des produits avec CRUD
+- [ok] Créer la page de gestion des catégories
+- [ok] Créer la page de gestion des fournisseurs
+- [ok] Implémenter la page des mouvements de stock
 
 ## 📦 Livrable attendu
 Interface utilisateur complète pour toutes les fonctionnalités.
