@@ -51,9 +51,14 @@ Certaines routes nécessitent un token JWT dans l'en-tête `Authorization` sous 
 ### Catégories
 
 #### Lister toutes les catégories
-- **URL** : `/categories`
+- **URL** : `/categories?search=term&page=1&limit=10`
 - **Méthode** : GET
 - **Accès** : Public
+- **Paramètres de requête** :
+  - `search` (optionnel) : Rechercher par nom ou description
+  - `page` (optionnel) : Numéro de page (défaut : 1)
+  - `limit` (optionnel) : Nombre d'éléments par page (défaut : 10)
+- **Réponse** : Objet avec `categories` et `pagination`
 
 #### Obtenir une catégorie
 - **URL** : `/categories/:id`
@@ -85,9 +90,16 @@ Certaines routes nécessitent un token JWT dans l'en-tête `Authorization` sous 
 ### Produits
 
 #### Lister tous les produits
-- **URL** : `/products`
+- **URL** : `/products?page=1&limit=10&category_id=1&supplier_id=2&search=term`
 - **Méthode** : GET
 - **Accès** : Public
+- **Paramètres de requête** :
+  - `page` (optionnel) : Numéro de page (défaut : 1)
+  - `limit` (optionnel) : Nombre d'éléments par page (défaut : 10)
+  - `category_id` (optionnel) : Filtrer par catégorie
+  - `supplier_id` (optionnel) : Filtrer par fournisseur
+  - `search` (optionnel) : Rechercher par nom ou description
+- **Réponse** : Objet avec `products` et `pagination`
 
 #### Obtenir un produit
 - **URL** : `/products/:id`
@@ -96,6 +108,11 @@ Certaines routes nécessitent un token JWT dans l'en-tête `Authorization` sous 
 
 #### Rechercher des produits
 - **URL** : `/products/search?q=term`
+- **Méthode** : GET
+- **Accès** : Public
+
+#### Produits en stock faible
+- **URL** : `/products/low-stock`
 - **Méthode** : GET
 - **Accès** : Public
 
@@ -129,9 +146,14 @@ Certaines routes nécessitent un token JWT dans l'en-tête `Authorization` sous 
 ### Fournisseurs
 
 #### Lister tous les fournisseurs
-- **URL** : `/suppliers`
+- **URL** : `/suppliers?search=term&page=1&limit=10`
 - **Méthode** : GET
 - **Accès** : Public
+- **Paramètres de requête** :
+  - `search` (optionnel) : Rechercher par nom, contact, email, téléphone ou adresse
+  - `page` (optionnel) : Numéro de page (défaut : 1)
+  - `limit` (optionnel) : Nombre d'éléments par page (défaut : 10)
+- **Réponse** : Objet avec `suppliers` et `pagination`
 
 #### Obtenir un fournisseur
 - **URL** : `/suppliers/:id`

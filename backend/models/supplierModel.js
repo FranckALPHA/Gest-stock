@@ -42,6 +42,84 @@ const Supplier = {
   },
 
   /**
+   * Récupère tous les fournisseurs avec recherche
+   * @param {String} search - Terme de recherche
+   * @returns {Promise} - Promesse avec la liste des fournisseurs filtrés
+   */
+  findAllWithSearch: (search = '') => {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM suppliers WHERE name LIKE ? OR contact LIKE ? OR email LIKE ? OR phone LIKE ? OR address LIKE ?`;
+      const searchTerm = `%${search}%`;
+      db.all(sql, [searchTerm, searchTerm, searchTerm, searchTerm, searchTerm], (err, rows) => {
+        if (err) return reject(err);
+        resolve(rows);
+      });
+    });
+  },
+
+  /**
+   * Récupère tous les fournisseurs avec pagination
+   * @param {Number} page - Numéro de page (1-based)
+   * @param {Number} limit - Nombre d'éléments par page
+   * @returns {Promise} - Promesse avec les fournisseurs et métadonnées
+   */
+  findAllPaginated: (page = 1, limit = 10) => {
+    return new Promise((resolve, reject) => {
+      const offset = (page - 1) * limit;
+      const sql = `SELECT * FROM suppliers LIMIT ? OFFSET ?`;
+      const countSql = 'SELECT COUNT(*) as total FROM suppliers';
+
+      db.all(sql, [limit, offset], (err, rows) => {
+        if (err) return reject(err);
+        db.get(countSql, [], (err, countRow) => {
+          if (err) return reject(err);
+          resolve({
+            suppliers: rows,
+            pagination: {
+              current_page: page,
+              per_page: limit,
+              total: countRow.total,
+              total_pages: Math.ceil(countRow.total / limit)
+            }
+          });
+        });
+      });
+    });
+  },
+
+  /**
+   * Récupère tous les fournisseurs avec recherche et pagination
+   * @param {String} search - Terme de recherche
+   * @param {Number} page - Numéro de page
+   * @param {Number} limit - Nombre d'éléments par page
+   * @returns {Promise} - Promesse avec les fournisseurs filtrés et métadonnées
+   */
+  findAllWithSearchAndPagination: (search = '', page = 1, limit = 10) => {
+    return new Promise((resolve, reject) => {
+      const offset = (page - 1) * limit;
+      const searchTerm = `%${search}%`;
+      const sql = `SELECT * FROM suppliers WHERE name LIKE ? OR contact LIKE ? OR email LIKE ? OR phone LIKE ? OR address LIKE ? LIMIT ? OFFSET ?`;
+      const countSql = `SELECT COUNT(*) as total FROM suppliers WHERE name LIKE ? OR contact LIKE ? OR email LIKE ? OR phone LIKE ? OR address LIKE ?`;
+
+      db.all(sql, [searchTerm, searchTerm, searchTerm, searchTerm, searchTerm, limit, offset], (err, rows) => {
+        if (err) return reject(err);
+        db.get(countSql, [searchTerm, searchTerm, searchTerm, searchTerm, searchTerm], (err, countRow) => {
+          if (err) return reject(err);
+          resolve({
+            suppliers: rows,
+            pagination: {
+              current_page: page,
+              per_page: limit,
+              total: countRow.total,
+              total_pages: Math.ceil(countRow.total / limit)
+            }
+          });
+        });
+      });
+    });
+  },
+
+  /**
    * Récupère tous les fournisseurs
    * @returns {Promise} - Promesse avec la liste des fournisseurs
    */

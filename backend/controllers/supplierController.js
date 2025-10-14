@@ -2,14 +2,19 @@ const { validationResult } = require('express-validator');
 const Supplier = require('../models/supplierModel');
 
 /**
- * Liste tous les fournisseurs
+ * Liste tous les fournisseurs (avec recherche et pagination)
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  */
 async function listSuppliers(req, res) {
   try {
-    const suppliers = await Supplier.findAll();
-    res.json(suppliers);
+    const { search, page = 1, limit = 10 } = req.query;
+    const result = await Supplier.findAllWithSearchAndPagination(
+      search,
+      parseInt(page),
+      parseInt(limit)
+    );
+    res.json(result);
   } catch (error) {
     res.status(500).json({ message: 'Erreur serveur' });
   }

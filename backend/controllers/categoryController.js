@@ -2,14 +2,19 @@ const { validationResult } = require('express-validator');
 const Category = require('../models/categoryModel');
 
 /**
- * Liste toutes les catégories
+ * Liste toutes les catégories (avec recherche et pagination)
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  */
 async function listCategories(req, res) {
   try {
-    const categories = await Category.findAll();
-    res.json(categories);
+    const { search, page = 1, limit = 10 } = req.query;
+    const result = await Category.findAllWithSearchAndPagination(
+      search,
+      parseInt(page),
+      parseInt(limit)
+    );
+    res.json(result);
   } catch (error) {
     res.status(500).json({ message: 'Erreur serveur' });
   }

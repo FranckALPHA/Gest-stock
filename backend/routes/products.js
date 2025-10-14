@@ -8,12 +8,16 @@ const {
   updateProduct,
   deleteProduct,
   searchProducts,
+  getLowStockProducts,
 } = require('../controllers/productController');
 
 const router = express.Router();
 
 // GET /api/products - Lister tous les produits (avec filtres à implémenter ultérieurement)
 router.get('/', listProducts);
+
+// GET /api/products/low-stock - Produits en stock faible
+router.get('/low-stock', getLowStockProducts);
 
 // GET /api/products/:id - Obtenir un produit
 router.get('/:id', getProduct);

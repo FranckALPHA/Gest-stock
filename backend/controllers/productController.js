@@ -2,14 +2,19 @@ const { validationResult } = require('express-validator');
 const Product = require('../models/productModel');
 
 /**
- * Liste tous les produits (avec jointures catégorie/fournisseur)
+ * Liste tous les produits (avec jointures catégorie/fournisseur et filtres)
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  */
 async function listProducts(req, res) {
   try {
-    const products = await Product.findAll();
-    res.json(products);
+    const { category_id, supplier_id, search, page = 1, limit = 10 } = req.query;
+    const result = await Product.findAllWithFiltersAndPagination(
+      { category_id, supplier_id, search },
+      parseInt(page),
+      parseInt(limit)
+    );
+    res.json(result);
   } catch (error) {
     res.status(500).json({ message: 'Erreur serveur' });
   }
@@ -124,6 +129,20 @@ async function searchProducts(req, res) {
   }
 }
 
+/**
+ * Récupère les produits en stock faible
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ */
+async function getLowStockProducts(req, res) {
+  try {
+    const lowStockProducts = await Product.getLowStock();
+    res.json(lowStockProducts);
+  } catch (error) {
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+}
+
 module.exports = {
   listProducts,
   getProduct,
@@ -131,4 +150,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   searchProducts,
+  getLowStockProducts,
 };
