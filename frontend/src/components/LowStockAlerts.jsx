@@ -113,45 +113,71 @@ function LowStockAlerts({ threshold = 10, showHeader = true, maxItems = 5 }) {
         </CardHeader>
       )}
       <CardContent>
-        <div className="space-y-2">
+        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           {alerts.slice(0, maxItems).map((product) => (
-            <Alert key={product.id} className="border-orange-200 bg-orange-50">
-              <AlertTriangle className="h-4 w-4 text-orange-600" />
-              <AlertDescription className="text-orange-800">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <span className="font-medium">{product.name}</span>
-                    {product.category_name && (
-                      <span className="text-sm text-orange-700 ml-2">
-                        ({product.category_name})
-                      </span>
-                    )}
+            <Card key={product.id} className="border-orange-200 bg-orange-50/50 dark:border-orange-800 dark:bg-orange-950/20">
+              <CardContent className="p-4">
+                <div className="space-y-3">
+                  {/* En-tête avec icône d'alerte */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center space-x-2">
+                      <AlertTriangle className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                      <h4 className="font-semibold text-foreground text-sm leading-tight">
+                        {product.name}
+                      </h4>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Badge variant="destructive">
-                      Stock: {product.quantity || 0}
-                    </Badge>
-                    <Badge variant="outline" className="text-orange-700 border-orange-300">
-                      Seuil: {product.alert_threshold || threshold}
-                    </Badge>
+                  
+                  {/* Catégorie */}
+                  {product.category_name && (
+                    <div>
+                      <Badge variant="secondary" className="text-xs">
+                        {product.category_name}
+                      </Badge>
+                    </div>
+                  )}
+                  
+                  {/* Informations de stock */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Stock:</span>
+                      <Badge variant="destructive" className="text-xs">
+                        {product.quantity || 0}
+                      </Badge>
+                    </div>
+                    
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Seuil:</span>
+                      <Badge variant="outline" className="text-xs border-orange-300 text-orange-700 dark:border-orange-600 dark:text-orange-400">
+                        {product.alert_threshold || threshold}
+                      </Badge>
+                    </div>
                   </div>
+                  
+                  {/* Fournisseur */}
+                  {product.supplier_name && (
+                    <div className="pt-2 border-t border-orange-200 dark:border-orange-800">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Fournisseur:</span>
+                        <span className="font-medium text-foreground text-xs">
+                          {product.supplier_name}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                {product.supplier_name && (
-                  <p className="text-sm text-orange-700 mt-1">
-                    Fournisseur: {product.supplier_name}
-                  </p>
-                )}
-              </AlertDescription>
-            </Alert>
+              </CardContent>
+            </Card>
           ))}
-          {alerts.length > maxItems && (
-            <div className="text-center pt-2">
-              <p className="text-sm text-muted-foreground">
-                Et {alerts.length - maxItems} autre{alerts.length - maxItems > 1 ? 's' : ''} produit{alerts.length - maxItems > 1 ? 's' : ''}...
-              </p>
-            </div>
-          )}
         </div>
+        
+        {alerts.length > maxItems && (
+          <div className="text-center pt-4 mt-4 border-t border-border">
+            <p className="text-sm text-muted-foreground">
+              Et {alerts.length - maxItems} autre{alerts.length - maxItems > 1 ? 's' : ''} produit{alerts.length - maxItems > 1 ? 's' : ''}...
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   )
