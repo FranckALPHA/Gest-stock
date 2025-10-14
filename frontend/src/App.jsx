@@ -7,6 +7,7 @@ import Products from './pages/Products.jsx'
 import Categories from './pages/Categories.jsx'
 import Suppliers from './pages/Suppliers.jsx'
 import StockMovements from './pages/StockMovements.jsx'
+import Users from './pages/Users.jsx'
 import { useAuth } from './context/AuthContext.jsx'
 import { Link } from 'react-router-dom'
 import { Badge } from './components/ui/badge.jsx'
@@ -75,6 +76,14 @@ function Navigation() {
             >
               Mouvements
             </Link>
+            {isAdmin() && (
+              <Link 
+                to="/users" 
+                className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                Utilisateurs
+              </Link>
+            )}
           </nav>
 
           {/* Informations utilisateur et déconnexion */}
@@ -168,6 +177,16 @@ function AppRoutes() {
           <ProtectedRoute>
             <MainLayout>
               <StockMovements />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/users"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <Users />
             </MainLayout>
           </ProtectedRoute>
         }
