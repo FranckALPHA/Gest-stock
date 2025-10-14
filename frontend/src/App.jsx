@@ -8,6 +8,8 @@ import Categories from './pages/Categories.jsx'
 import StockMovements from './pages/StockMovements.jsx'
 import { useAuth } from './context/AuthContext.jsx'
 import { Link } from 'react-router-dom'
+import { Badge } from './components/ui/badge.jsx'
+import { Button } from './components/ui/button.jsx'
 
 /**
  * Composant de navigation principal
