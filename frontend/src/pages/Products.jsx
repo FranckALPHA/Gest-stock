@@ -120,7 +120,7 @@ function Products() {
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({
       ...prev,
-      [key]: value,
+      [key]: value === 'all' ? '' : value,
       page: 1 // Reset à la première page lors d'un changement de filtre
     }))
   }
@@ -284,7 +284,7 @@ function Products() {
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value === 'none' ? '' : value
     }))
   }
 
@@ -364,12 +364,12 @@ function Products() {
                 {/* Catégorie */}
                 <div className="space-y-2">
                   <Label htmlFor="category">Catégorie</Label>
-                  <Select value={formData.category_id} onValueChange={(value) => handleInputChange('category_id', value)}>
+                  <Select value={formData.category_id || 'none'} onValueChange={(value) => handleInputChange('category_id', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Sélectionner une catégorie" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Aucune catégorie</SelectItem>
+                      <SelectItem value="none">Aucune catégorie</SelectItem>
                       {categories.map((category) => (
                         <SelectItem key={category.id} value={category.id.toString()}>
                           {category.name}
@@ -382,12 +382,12 @@ function Products() {
                 {/* Fournisseur */}
                 <div className="space-y-2">
                   <Label htmlFor="supplier">Fournisseur</Label>
-                  <Select value={formData.supplier_id} onValueChange={(value) => handleInputChange('supplier_id', value)}>
+                  <Select value={formData.supplier_id || 'none'} onValueChange={(value) => handleInputChange('supplier_id', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Sélectionner un fournisseur" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Aucun fournisseur</SelectItem>
+                      <SelectItem value="none">Aucun fournisseur</SelectItem>
                       {suppliers.map((supplier) => (
                         <SelectItem key={supplier.id} value={supplier.id.toString()}>
                           {supplier.name}
@@ -505,12 +505,12 @@ function Products() {
             {/* Catégorie */}
             <div className="space-y-2">
               <Label htmlFor="category-filter">Catégorie</Label>
-              <Select value={filters.category_id} onValueChange={(value) => handleFilterChange('category_id', value)}>
+              <Select value={filters.category_id || 'all'} onValueChange={(value) => handleFilterChange('category_id', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Toutes les catégories" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Toutes les catégories</SelectItem>
+                  <SelectItem value="all">Toutes les catégories</SelectItem>
                   {categories.map((category) => (
                     <SelectItem key={category.id} value={category.id.toString()}>
                       {category.name}
@@ -523,12 +523,12 @@ function Products() {
             {/* Fournisseur */}
             <div className="space-y-2">
               <Label htmlFor="supplier-filter">Fournisseur</Label>
-              <Select value={filters.supplier_id} onValueChange={(value) => handleFilterChange('supplier_id', value)}>
+              <Select value={filters.supplier_id || 'all'} onValueChange={(value) => handleFilterChange('supplier_id', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Tous les fournisseurs" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tous les fournisseurs</SelectItem>
+                  <SelectItem value="all">Tous les fournisseurs</SelectItem>
                   {suppliers.map((supplier) => (
                     <SelectItem key={supplier.id} value={supplier.id.toString()}>
                       {supplier.name}
@@ -730,12 +730,12 @@ function Products() {
             {/* Catégorie */}
             <div className="space-y-2">
               <Label htmlFor="edit-category">Catégorie</Label>
-              <Select value={formData.category_id} onValueChange={(value) => handleInputChange('category_id', value)}>
+              <Select value={formData.category_id || 'none'} onValueChange={(value) => handleInputChange('category_id', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionner une catégorie" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Aucune catégorie</SelectItem>
+                  <SelectItem value="none">Aucune catégorie</SelectItem>
                   {categories.map((category) => (
                     <SelectItem key={category.id} value={category.id.toString()}>
                       {category.name}
@@ -748,12 +748,12 @@ function Products() {
             {/* Fournisseur */}
             <div className="space-y-2">
               <Label htmlFor="edit-supplier">Fournisseur</Label>
-              <Select value={formData.supplier_id} onValueChange={(value) => handleInputChange('supplier_id', value)}>
+              <Select value={formData.supplier_id || 'none'} onValueChange={(value) => handleInputChange('supplier_id', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Sélectionner un fournisseur" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Aucun fournisseur</SelectItem>
+                  <SelectItem value="none">Aucun fournisseur</SelectItem>
                   {suppliers.map((supplier) => (
                     <SelectItem key={supplier.id} value={supplier.id.toString()}>
                       {supplier.name}
