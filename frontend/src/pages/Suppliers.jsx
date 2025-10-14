@@ -7,6 +7,7 @@ import { Badge } from '../components/ui/badge'
 import { Separator } from '../components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog'
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '../components/ui/pagination'
 import { Label } from '../components/ui/label'
 import { Textarea } from '../components/ui/textarea'
 import { supplierService } from '../services/supplier.api.js'
@@ -28,6 +29,12 @@ function Suppliers() {
   const [searchTerm, setSearchTerm] = useState('')
   const [editingSupplier, setEditingSupplier] = useState(null)
   
+  // États pour la pagination
+  const [currentPage, setCurrentPage] = useState(1)
+  const [suppliersPerPage] = useState(10)
+  const [totalSuppliers, setTotalSuppliers] = useState(0)
+  const [pagination, setPagination] = useState({})
+  
   // États du formulaire
   const [formData, setFormData] = useState({
     name: '',
@@ -43,11 +50,22 @@ function Suppliers() {
   /**
    * Charge la liste des fournisseurs depuis l'API
    */
-  const loadSuppliers = async () => {
+  const loadSuppliers = async (page = currentPage, search = searchTerm) => {
     try {
       setLoading(true)
-      const data = await supplierService.getAllSuppliers()
-      setSuppliers(data)
+      const params = {
+        page,
+        limit: suppliersPerPage,
+        ...(search && { search })
+      }
+      
+      const data = await supplierService.getAllSuppliers(params)
+      const suppliersList = data.suppliers || data
+      const paginationData = data.pagination || {}
+      
+      setSuppliers(Array.isArray(suppliersList) ? suppliersList : [])
+      setPagination(paginationData)
+      setTotalSuppliers(paginationData.total || suppliersList.length || 0)
     } catch (err) {
       console.error('Erreur lors du chargement des fournisseurs:', err)
       if (err.response?.status === 401) {
@@ -55,9 +73,27 @@ function Suppliers() {
       } else {
         error('Erreur', 'Impossible de charger les fournisseurs. Veuillez réessayer.')
       }
+      setSuppliers([])
     } finally {
       setLoading(false)
     }
+  }
+
+  /**
+   * Gère le changement de page
+   */
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage)
+    loadSuppliers(newPage, searchTerm)
+  }
+
+  /**
+   * Gère la recherche avec debounce
+   */
+  const handleSearch = (value) => {
+    setSearchTerm(value)
+    setCurrentPage(1) // Reset à la première page lors d'une recherche
+    loadSuppliers(1, value)
   }
 
   /**
@@ -72,7 +108,7 @@ function Suppliers() {
     try {
       setIsSubmitting(true)
       await supplierService.createSupplier(formData)
-      await loadSuppliers()
+      await loadSuppliers(currentPage, searchTerm)
       setIsCreateDialogOpen(false)
       resetForm()
       success('Fournisseur créé', 'Le fournisseur a été créé avec succès.')
@@ -103,7 +139,7 @@ function Suppliers() {
     try {
       setIsSubmitting(true)
       await supplierService.updateSupplier(editingSupplier.id, formData)
-      await loadSuppliers()
+      await loadSuppliers(currentPage, searchTerm)
       setIsEditDialogOpen(false)
       setEditingSupplier(null)
       resetForm()
@@ -136,7 +172,7 @@ function Suppliers() {
 
     try {
       await supplierService.deleteSupplier(supplierId)
-      await loadSuppliers()
+      await loadSuppliers(currentPage, searchTerm)
       success('Fournisseur supprimé', 'Le fournisseur a été supprimé avec succès.')
     } catch (err) {
       if (err.response?.status === 403) {
@@ -332,12 +368,12 @@ function Suppliers() {
           <Input
             placeholder="Rechercher un fournisseur..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             className="pl-8"
           />
         </div>
         <Badge variant="outline">
-          {filteredSuppliers.length} fournisseur{filteredSuppliers.length !== 1 ? 's' : ''}
+          {totalSuppliers} fournisseur{totalSuppliers !== 1 ? 's' : ''}
         </Badge>
       </div>
 
@@ -560,6 +596,48 @@ function Suppliers() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Pagination */}
+      {pagination.totalPages > 1 && (
+        <Card>
+          <CardContent className="pt-6">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    className={currentPage <= 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  />
+                </PaginationItem>
+                
+                {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                  const pageNum = Math.max(1, Math.min(pagination.totalPages - 4, currentPage - 2)) + i
+                  if (pageNum > pagination.totalPages) return null
+                  
+                  return (
+                    <PaginationItem key={pageNum}>
+                      <PaginationLink
+                        onClick={() => handlePageChange(pageNum)}
+                        isActive={currentPage === pageNum}
+                        className="cursor-pointer"
+                      >
+                        {pageNum}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )
+                })}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    className={currentPage >= pagination.totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Container des notifications toast */}
       <ToastContainer toasts={toasts} removeToast={removeToast} />

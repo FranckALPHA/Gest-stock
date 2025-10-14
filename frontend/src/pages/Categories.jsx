@@ -7,6 +7,7 @@ import { Badge } from '../components/ui/badge'
 import { Separator } from '../components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog'
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '../components/ui/pagination'
 import { categoryService } from '../services/category.api.js'
 import { useAuth } from '../context/AuthContext'
 import CategoryForm from '../components/CategoryForm'
@@ -27,33 +28,58 @@ function Categories() {
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [categoryToDelete, setCategoryToDelete] = useState(null)
+  
+  // États pour la pagination
+  const [currentPage, setCurrentPage] = useState(1)
+  const [categoriesPerPage] = useState(10)
+  const [totalCategories, setTotalCategories] = useState(0)
+  const [pagination, setPagination] = useState({})
   const { user, isAdmin, isManager } = useAuth()
   const { toasts, removeToast, success, error, warning } = useToast()
 
   /**
-   * Charge la liste des catégories depuis l'API
+   * Charge la liste des catégories depuis l'API avec pagination et recherche
    */
-  const loadCategories = async () => {
+  const loadCategories = async (page = currentPage, search = searchTerm) => {
     try {
       setLoading(true)
-      const data = await categoryService.getAllCategories()
-      setCategories(data)
+      const params = {
+        page,
+        limit: categoriesPerPage,
+        ...(search && { search })
+      }
+      
+      const data = await categoryService.getAllCategories(params)
+      const categoriesList = data.categories || data
+      const paginationData = data.pagination || {}
+      
+      setCategories(Array.isArray(categoriesList) ? categoriesList : [])
+      setPagination(paginationData)
+      setTotalCategories(paginationData.total || categoriesList.length || 0)
     } catch (error) {
       console.error('Erreur lors du chargement des catégories:', error)
+      setCategories([])
     } finally {
       setLoading(false)
     }
   }
 
   /**
-   * Effectue la recherche dans les catégories
-   * @param {string} term - Terme de recherche
-   * @returns {Array} - Catégories filtrées
+   * Gère le changement de page
    */
-  const filteredCategories = categories.filter(category =>
-    category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (category.description && category.description.toLowerCase().includes(searchTerm.toLowerCase()))
-  )
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage)
+    loadCategories(newPage, searchTerm)
+  }
+
+  /**
+   * Gère la recherche avec debounce
+   */
+  const handleSearch = (value) => {
+    setSearchTerm(value)
+    setCurrentPage(1) // Reset à la première page lors d'une recherche
+    loadCategories(1, value)
+  }
 
   /**
    * Gère la création d'une nouvelle catégorie
@@ -62,7 +88,7 @@ function Categories() {
   const handleCreateCategory = async (categoryData) => {
     try {
       await categoryService.createCategory(categoryData)
-      await loadCategories()
+      await loadCategories(currentPage, searchTerm)
       setIsCreateDialogOpen(false)
       success('Catégorie créée', 'La catégorie a été créée avec succès.')
     } catch (err) {
@@ -88,7 +114,7 @@ function Categories() {
   const handleUpdateCategory = async (categoryData) => {
     try {
       await categoryService.updateCategory(selectedCategory.id, categoryData)
-      await loadCategories()
+      await loadCategories(currentPage, searchTerm)
       setIsEditDialogOpen(false)
       setSelectedCategory(null)
       success('Catégorie modifiée', 'La catégorie a été modifiée avec succès.')
@@ -130,7 +156,7 @@ function Categories() {
   const confirmDeleteCategory = async () => {
     try {
       await categoryService.deleteCategory(categoryToDelete.id)
-      await loadCategories()
+      await loadCategories(currentPage, searchTerm)
       setDeleteDialogOpen(false)
       setCategoryToDelete(null)
       success('Catégorie supprimée', 'La catégorie a été supprimée avec succès.')
@@ -207,12 +233,12 @@ function Categories() {
           <Input
             placeholder="Rechercher une catégorie..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             className="pl-8"
           />
         </div>
         <Badge variant="outline">
-          {filteredCategories.length} catégorie{filteredCategories.length !== 1 ? 's' : ''}
+          {totalCategories} catégorie{totalCategories !== 1 ? 's' : ''}
         </Badge>
       </div>
 
@@ -229,7 +255,7 @@ function Categories() {
             <div className="flex items-center justify-center py-8">
               <div className="text-muted-foreground">Chargement des catégories...</div>
             </div>
-          ) : filteredCategories.length === 0 ? (
+          ) : categories.length === 0 ? (
             <div className="flex items-center justify-center py-8">
               <div className="text-center">
                 <div className="text-muted-foreground mb-2">
@@ -256,7 +282,7 @@ function Categories() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredCategories.map((category) => (
+                {categories.map((category) => (
                   <TableRow key={category.id}>
                     <TableCell className="font-medium">
                       {category.name}
@@ -345,6 +371,48 @@ function Categories() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Pagination */}
+      {pagination.totalPages > 1 && (
+        <Card>
+          <CardContent className="pt-6">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    className={currentPage <= 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  />
+                </PaginationItem>
+                
+                {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                  const pageNum = Math.max(1, Math.min(pagination.totalPages - 4, currentPage - 2)) + i
+                  if (pageNum > pagination.totalPages) return null
+                  
+                  return (
+                    <PaginationItem key={pageNum}>
+                      <PaginationLink
+                        onClick={() => handlePageChange(pageNum)}
+                        isActive={currentPage === pageNum}
+                        className="cursor-pointer"
+                      >
+                        {pageNum}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )
+                })}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    className={currentPage >= pagination.totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Container des notifications toast */}
       <ToastContainer toasts={toasts} removeToast={removeToast} />

@@ -6,11 +6,22 @@ import api from './api';
  */
 export const categoryService = {
   /**
-   * Récupérer toutes les catégories
-   * @returns {Promise<Array>} Liste des catégories
+   * Récupérer toutes les catégories avec pagination et recherche
+   * @param {Object} params - Paramètres de recherche et pagination
+   * @param {string} [params.search] - Terme de recherche
+   * @param {number} [params.page=1] - Numéro de page
+   * @param {number} [params.limit=10] - Nombre d'éléments par page
+   * @returns {Promise<Object>} Objet avec categories et pagination
    */
-  async getAllCategories() {
-    const response = await api.get('/categories');
+  async getAllCategories(params = {}) {
+    const queryParams = new URLSearchParams();
+    
+    if (params.search) queryParams.append('search', params.search);
+    if (params.page) queryParams.append('page', params.page);
+    if (params.limit) queryParams.append('limit', params.limit);
+    
+    const url = `/categories${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    const response = await api.get(url);
     return response.data;
   },
 

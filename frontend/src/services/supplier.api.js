@@ -6,11 +6,22 @@ import api from './api';
  */
 export const supplierService = {
   /**
-   * Récupérer tous les fournisseurs
-   * @returns {Promise<Array>} Liste des fournisseurs
+   * Récupérer tous les fournisseurs avec pagination et recherche
+   * @param {Object} params - Paramètres de recherche et pagination
+   * @param {string} [params.search] - Terme de recherche
+   * @param {number} [params.page=1] - Numéro de page
+   * @param {number} [params.limit=10] - Nombre d'éléments par page
+   * @returns {Promise<Object>} Objet avec suppliers et pagination
    */
-  async getAllSuppliers() {
-    const response = await api.get('/suppliers');
+  async getAllSuppliers(params = {}) {
+    const queryParams = new URLSearchParams();
+    
+    if (params.search) queryParams.append('search', params.search);
+    if (params.page) queryParams.append('page', params.page);
+    if (params.limit) queryParams.append('limit', params.limit);
+    
+    const url = `/suppliers${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    const response = await api.get(url);
     return response.data;
   },
 
