@@ -11,6 +11,7 @@ import { useAuth } from './context/AuthContext.jsx'
 import { Link } from 'react-router-dom'
 import { Badge } from './components/ui/badge.jsx'
 import { Button } from './components/ui/button.jsx'
+import ErrorBoundary from './components/ErrorBoundary.jsx'
 
 /**
  * Composant de navigation principal
@@ -182,9 +183,11 @@ function AppRoutes() {
  */
 function App() {
   return (
-    <AuthProvider>
-      <AppRoutes />
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </ErrorBoundary>
   )
 }
 

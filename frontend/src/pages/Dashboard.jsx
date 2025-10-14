@@ -21,6 +21,8 @@ import { dashboardService } from '../services/dashboard.api.js'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../hooks/useToast'
 import ToastContainer from '../components/ToastContainer'
+import LowStockAlerts from '../components/LowStockAlerts.jsx'
+import DashboardCharts from '../components/DashboardCharts.jsx'
 
 /**
  * Page du tableau de bord principal
@@ -33,7 +35,6 @@ function Dashboard() {
     totalQuantity: 0,
     totalValue: 0
   })
-  const [alerts, setAlerts] = useState([])
   const [recentMovements, setRecentMovements] = useState([])
   const [loading, setLoading] = useState(true)
   const { user, isAdmin } = useAuth()
@@ -49,10 +50,6 @@ function Dashboard() {
       // Charger les statistiques générales
       const statsData = await dashboardService.getStats()
       setStats(statsData)
-      
-      // Charger les alertes de stock faible
-      const alertsData = await dashboardService.getAlerts()
-      setAlerts(alertsData)
       
       // Charger les mouvements récents
       const movementsData = await dashboardService.getRecentMovements()
@@ -163,44 +160,7 @@ function Dashboard() {
       </div>
 
       {/* Alertes de stock faible */}
-      {alerts.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <AlertTriangle className="mr-2 h-5 w-5 text-orange-500" />
-              Alertes de Stock Faible
-            </CardTitle>
-            <CardDescription>
-              {alerts.length} produit{alerts.length > 1 ? 's' : ''} nécessitant une attention
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {alerts.slice(0, 5).map((product) => (
-                <Alert key={product.id} className="border-orange-200 bg-orange-50">
-                  <AlertTriangle className="h-4 w-4 text-orange-600" />
-                  <AlertDescription className="text-orange-800">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">{product.name}</span>
-                      <Badge variant="destructive">
-                        Stock: {product.quantity || 0}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-orange-700 mt-1">
-                      Seuil d'alerte: {product.alert_threshold || 10}
-                    </p>
-                  </AlertDescription>
-                </Alert>
-              ))}
-              {alerts.length > 5 && (
-                <p className="text-sm text-muted-foreground text-center">
-                  Et {alerts.length - 5} autre{alerts.length - 5 > 1 ? 's' : ''} produit{alerts.length - 5 > 1 ? 's' : ''}...
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <LowStockAlerts threshold={10} maxItems={5} />
 
       {/* Mouvements récents */}
       <Card>
@@ -316,6 +276,9 @@ function Dashboard() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Graphiques et analyses */}
+      <DashboardCharts />
 
       {/* Container des notifications toast */}
       <ToastContainer toasts={toasts} removeToast={removeToast} />

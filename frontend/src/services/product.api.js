@@ -6,11 +6,25 @@ import api from './api';
  */
 export const productService = {
   /**
-   * Récupérer tous les produits
-   * @returns {Promise<Array>} Liste des produits
+   * Récupérer tous les produits avec pagination et filtres
+   * @param {Object} [params] - Paramètres de requête
+   * @param {number} [params.page=1] - Numéro de page
+   * @param {number} [params.limit=10] - Nombre d'éléments par page
+   * @param {number} [params.category_id] - Filtrer par catégorie
+   * @param {number} [params.supplier_id] - Filtrer par fournisseur
+   * @param {string} [params.search] - Rechercher par nom ou description
+   * @returns {Promise<Object>} Objet avec products et pagination
    */
-  async getAllProducts() {
-    const response = await api.get('/products');
+  async getAllProducts(params = {}) {
+    const queryParams = new URLSearchParams();
+    
+    if (params.page) queryParams.append('page', params.page);
+    if (params.limit) queryParams.append('limit', params.limit);
+    if (params.category_id) queryParams.append('category_id', params.category_id);
+    if (params.supplier_id) queryParams.append('supplier_id', params.supplier_id);
+    if (params.search) queryParams.append('search', params.search);
+    
+    const response = await api.get(`/products?${queryParams.toString()}`);
     return response.data;
   },
 
@@ -76,6 +90,16 @@ export const productService = {
    */
   async searchProducts(searchTerm) {
     const response = await api.get(`/products/search?q=${encodeURIComponent(searchTerm)}`);
+    return response.data;
+  },
+
+  /**
+   * Récupérer les produits avec stock faible
+   * @param {number} [threshold=10] - Seuil de stock faible
+   * @returns {Promise<Array>} Liste des produits avec stock faible
+   */
+  async getLowStockProducts(threshold = 10) {
+    const response = await api.get(`/products/low-stock?threshold=${threshold}`);
     return response.data;
   }
 };
