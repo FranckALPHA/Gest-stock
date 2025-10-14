@@ -35,9 +35,15 @@ function StockMovements() {
   const { toasts, removeToast, success, error, warning } = useToast()
 
   /**
-   * Charge la liste des mouvements de stock depuis l'API
+   * Charge la liste des mouvements de stock depuis l'API (Admin uniquement)
    */
   const loadMovements = async () => {
+    // Ne charger les mouvements que si l'utilisateur est admin
+    if (!isAdmin()) {
+      setLoading(false)
+      return
+    }
+
     try {
       setLoading(true)
       const data = await stockMovementService.getAllMovements()
@@ -267,57 +273,74 @@ function StockMovements() {
         </div>
       )}
 
-      {/* Statistiques rapides */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Mouvements</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{movements.length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Entrées Aujourd'hui</CardTitle>
-            <ArrowUp className="h-4 w-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              {movements.filter(m => 
-                m.type === 'in' && 
-                new Date(m.created_at).toDateString() === new Date().toDateString()
-              ).length}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sorties Aujourd'hui</CardTitle>
-            <ArrowDown className="h-4 w-4 text-red-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">
-              {movements.filter(m => 
-                m.type === 'out' && 
-                new Date(m.created_at).toDateString() === new Date().toDateString()
-              ).length}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Statistiques rapides - Admin uniquement */}
+      {isAdmin() && (
+        <div className="grid gap-4 md:grid-cols-3">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Mouvements</CardTitle>
+              <Package className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{movements.length}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Entrées Aujourd'hui</CardTitle>
+              <ArrowUp className="h-4 w-4 text-green-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">
+                {movements.filter(m => 
+                  m.type === 'in' && 
+                  new Date(m.created_at).toDateString() === new Date().toDateString()
+                ).length}
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Sorties Aujourd'hui</CardTitle>
+              <ArrowDown className="h-4 w-4 text-red-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-red-600">
+                {movements.filter(m => 
+                  m.type === 'out' && 
+                  new Date(m.created_at).toDateString() === new Date().toDateString()
+                ).length}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Liste des mouvements */}
       <Card>
         <CardHeader>
           <CardTitle>Historique des Mouvements</CardTitle>
           <CardDescription>
-            Tous les mouvements de stock enregistrés
+            {isAdmin() ? 'Tous les mouvements de stock enregistrés' : 'Accès limité - Seuls les administrateurs peuvent consulter l\'historique complet'}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {loading ? (
+          {!isAdmin() ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="text-center">
+                <div className="text-muted-foreground mb-4">
+                  <Package className="mx-auto h-12 w-12 mb-4 text-muted-foreground" />
+                  <p className="text-lg font-medium mb-2">Accès limité</p>
+                  <p>Vous pouvez créer des mouvements de stock mais ne pouvez pas consulter l'historique complet.</p>
+                  <p className="mt-2">Seuls les administrateurs ont accès à la liste de tous les mouvements.</p>
+                </div>
+                <Button onClick={() => setIsCreateDialogOpen(true)}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Créer un mouvement
+                </Button>
+              </div>
+            </div>
+          ) : loading ? (
             <div className="flex items-center justify-center py-8">
               <div className="text-muted-foreground">Chargement des mouvements...</div>
             </div>
