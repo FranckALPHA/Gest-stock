@@ -83,15 +83,15 @@ function Dashboard() {
   }
 
   /**
-   * Formate un montant en euros
+   * Formate un montant en FCFA
    * @param {number} amount - Montant à formater
    * @returns {string} Montant formaté
    */
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR'
-    }).format(amount)
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount) + ' FCFA'
   }
 
   // Charger les données au montage du composant
