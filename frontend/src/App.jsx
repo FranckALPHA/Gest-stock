@@ -9,6 +9,7 @@ import Categories from './pages/Categories.jsx'
 import Suppliers from './pages/Suppliers.jsx'
 import StockMovements from './pages/StockMovements.jsx'
 import Users from './pages/Users.jsx'
+import Profile from './pages/Profile.jsx'
 import { useAuth } from './context/AuthContext.jsx'
 import { Link } from 'react-router-dom'
 import { Badge } from './components/ui/badge.jsx'
@@ -93,6 +94,14 @@ function Navigation() {
             <div className="text-sm text-muted-foreground">
               <span className="font-medium">{user?.name || user?.email}</span>
             </div>
+            
+            {/* Lien vers le profil */}
+            <Link 
+              to="/profile" 
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Profil
+            </Link>
             
             {/* Bouton de basculement de thème */}
             <ThemeToggle />
@@ -193,6 +202,16 @@ function AppRoutes() {
           <ProtectedRoute>
             <MainLayout>
               <Users />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <Profile />
             </MainLayout>
           </ProtectedRoute>
         }

@@ -18,7 +18,7 @@ import { Users as UsersIcon, UserCheck, UserX, Key, Eye, EyeOff, Shield, User } 
  * @returns {JSX.Element} - Composant de gestion des utilisateurs
  */
 function Users() {
-  const { user, isAdmin } = useAuth()
+  const { user: currentUser, isAdmin } = useAuth()
   const { success, error } = useToast()
   
   // États pour les données
@@ -283,35 +283,44 @@ function Users() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
-                          {/* Bouton d'activation/désactivation */}
-                          <Button
-                            variant={user.is_active ? 'destructive' : 'default'}
-                            size="sm"
-                            onClick={() => handleToggleUser(user.id, !user.is_active)}
-                            disabled={actionLoading[user.id]}
-                          >
-                            {user.is_active ? (
-                              <>
-                                <UserX className="w-4 h-4 mr-1" />
-                                Désactiver
-                              </>
-                            ) : (
-                              <>
-                                <UserCheck className="w-4 h-4 mr-1" />
-                                Activer
-                              </>
-                            )}
-                          </Button>
-                          
-                          {/* Bouton de changement de mot de passe */}
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleOpenPasswordModal(user)}
-                          >
-                            <Key className="w-4 h-4 mr-1" />
-                            Mot de passe
-                          </Button>
+                          {/* Vérifier si l'utilisateur actuel peut modifier cet utilisateur */}
+                          {user.role === 'admin' && user.id !== currentUser?.id ? (
+                            <div className="text-xs text-muted-foreground">
+                              Accès restreint
+                            </div>
+                          ) : (
+                            <>
+                              {/* Bouton d'activation/désactivation */}
+                              <Button
+                                variant={user.is_active ? 'destructive' : 'default'}
+                                size="sm"
+                                onClick={() => handleToggleUser(user.id, !user.is_active)}
+                                disabled={actionLoading[user.id]}
+                              >
+                                {user.is_active ? (
+                                  <>
+                                    <UserX className="w-4 h-4 mr-1" />
+                                    Désactiver
+                                  </>
+                                ) : (
+                                  <>
+                                    <UserCheck className="w-4 h-4 mr-1" />
+                                    Activer
+                                  </>
+                                )}
+                              </Button>
+                              
+                              {/* Bouton de changement de mot de passe */}
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleOpenPasswordModal(user)}
+                              >
+                                <Key className="w-4 h-4 mr-1" />
+                                Mot de passe
+                              </Button>
+                            </>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
