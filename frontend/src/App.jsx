@@ -4,6 +4,7 @@ import ProtectedRoute from './components/ProtectedRoute.jsx'
 import Login from './pages/Login.jsx'
 import Products from './pages/Products.jsx'
 import Categories from './pages/Categories.jsx'
+import StockMovements from './pages/StockMovements.jsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card.jsx'
 import { Badge } from './components/ui/badge.jsx'
 import { Separator } from './components/ui/separator.jsx'
@@ -60,6 +61,12 @@ function Navigation() {
               className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
             >
               Catégories
+            </Link>
+            <Link 
+              to="/stock-movements" 
+              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              Mouvements
             </Link>
           </nav>
 
@@ -269,6 +276,16 @@ function AppRoutes() {
           <ProtectedRoute>
             <MainLayout>
               <Categories />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/stock-movements"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <StockMovements />
             </MainLayout>
           </ProtectedRoute>
         }
