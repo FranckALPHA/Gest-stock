@@ -25,8 +25,15 @@ export const productService = {
   },
 
   /**
-   * Créer un nouveau produit
+   * Créer un nouveau produit (Admin uniquement)
    * @param {Object} productData - Données du produit
+   * @param {string} productData.name - Nom du produit
+   * @param {string} [productData.description] - Description du produit (optionnel)
+   * @param {number} [productData.category_id] - ID de la catégorie (optionnel)
+   * @param {number} [productData.supplier_id] - ID du fournisseur (optionnel)
+   * @param {number} productData.price - Prix du produit
+   * @param {number} [productData.quantity] - Quantité en stock (optionnel, défaut: 0)
+   * @param {number} [productData.alert_threshold] - Seuil d'alerte (optionnel, défaut: 10)
    * @returns {Promise<Object>} Produit créé
    */
   async createProduct(productData) {
@@ -35,9 +42,16 @@ export const productService = {
   },
 
   /**
-   * Mettre à jour un produit
+   * Mettre à jour un produit (Admin uniquement)
    * @param {number} id - ID du produit
    * @param {Object} productData - Nouvelles données du produit
+   * @param {string} [productData.name] - Nouveau nom du produit
+   * @param {string} [productData.description] - Nouvelle description du produit
+   * @param {number} [productData.category_id] - Nouvel ID de la catégorie
+   * @param {number} [productData.supplier_id] - Nouvel ID du fournisseur
+   * @param {number} [productData.price] - Nouveau prix du produit
+   * @param {number} [productData.quantity] - Nouvelle quantité en stock
+   * @param {number} [productData.alert_threshold] - Nouveau seuil d'alerte
    * @returns {Promise<Object>} Produit mis à jour
    */
   async updateProduct(id, productData) {
@@ -46,7 +60,7 @@ export const productService = {
   },
 
   /**
-   * Supprimer un produit
+   * Supprimer un produit (Admin uniquement)
    * @param {number} id - ID du produit
    * @returns {Promise<Object>} Confirmation de suppression
    */
@@ -62,26 +76,6 @@ export const productService = {
    */
   async searchProducts(searchTerm) {
     const response = await api.get(`/products/search?q=${encodeURIComponent(searchTerm)}`);
-    return response.data;
-  },
-
-  /**
-   * Récupérer les produits par catégorie
-   * @param {number} categoryId - ID de la catégorie
-   * @returns {Promise<Array>} Liste des produits de la catégorie
-   */
-  async getProductsByCategory(categoryId) {
-    const response = await api.get(`/products/category/${categoryId}`);
-    return response.data;
-  },
-
-  /**
-   * Récupérer les produits avec stock faible
-   * @param {number} [threshold=10] - Seuil de stock faible
-   * @returns {Promise<Array>} Liste des produits avec stock faible
-   */
-  async getLowStockProducts(threshold = 10) {
-    const response = await api.get(`/products/low-stock?threshold=${threshold}`);
     return response.data;
   }
 };
