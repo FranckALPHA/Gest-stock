@@ -35,7 +35,7 @@ const User = {
    */
   findById: (id) => {
     return new Promise((resolve, reject) => {
-      const sql = `SELECT id, username, email, role, created_at FROM users WHERE id = ?`;
+      const sql = `SELECT id, username, email, role, is_active, created_at FROM users WHERE id = ?`;
       db.get(sql, [id], (err, row) => {
         if (err) return reject(err);
         resolve(row);
@@ -89,10 +89,46 @@ const User = {
    */
   findAll: () => {
     return new Promise((resolve, reject) => {
-      const sql = `SELECT id, username, role, created_at FROM users`;
+      const sql = `SELECT id, username, email, role, is_active, created_at FROM users`;
       db.all(sql, [], (err, rows) => {
         if (err) return reject(err);
         resolve(rows);
+      });
+    });
+  },
+
+  /**
+   * Active ou désactive un utilisateur
+   * @param {Number} id - ID de l'utilisateur
+   * @param {Boolean} isActive - État d'activation
+   * @returns {Promise} - Promesse avec le nombre de lignes modifiées
+   */
+  toggleActive: (id, isActive) => {
+    return new Promise((resolve, reject) => {
+      const sql = `UPDATE users SET is_active = ? WHERE id = ?`;
+      db.run(sql, [isActive ? 1 : 0, id], function(err) {
+        if (err) return reject(err);
+        resolve(this.changes);
+      });
+    });
+  },
+
+  /**
+   * Modifie le mot de passe d'un utilisateur
+   * @param {Number} id - ID de l'utilisateur
+   * @param {String} newPassword - Nouveau mot de passe
+   * @returns {Promise} - Promesse avec le nombre de lignes modifiées
+   */
+  updatePassword: (id, newPassword) => {
+    return new Promise((resolve, reject) => {
+      bcrypt.hash(newPassword, 10, (err, hash) => {
+        if (err) return reject(err);
+
+        const sql = `UPDATE users SET password_hash = ? WHERE id = ?`;
+        db.run(sql, [hash, id], function(err) {
+          if (err) return reject(err);
+          resolve(this.changes);
+        });
       });
     });
   }

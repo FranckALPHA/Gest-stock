@@ -23,11 +23,12 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Redirection si déjà connecté
+  // Redirection si déjà connecté - par défaut vers le dashboard (route /)
   const from = location.state?.from?.pathname || '/';
 
   useEffect(() => {
     if (isAuthenticated) {
+      // Redirection immédiate vers le dashboard après connexion
       navigate(from, { replace: true });
     }
   }, [isAuthenticated, navigate, from]);
@@ -50,7 +51,8 @@ const Login = () => {
       
       await login(username.trim(), password);
       
-      // La redirection sera gérée par useEffect
+      // Redirection immédiate après connexion réussie
+      navigate(from, { replace: true });
     } catch (error) {
       console.error('Erreur de connexion:', error);
       

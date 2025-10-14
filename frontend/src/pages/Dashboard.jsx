@@ -51,14 +51,35 @@ function Dashboard() {
       
       // Charger les statistiques générales
       const statsData = await dashboardService.getStats()
-      setStats(statsData)
+      
+      // Valider et nettoyer les données statistiques
+      const validatedStats = {
+        totalProducts: Number(statsData?.totalProducts) || 0,
+        totalQuantity: Number(statsData?.totalQuantity) || 0,
+        totalValue: Number(statsData?.totalValue) || 0
+      }
+      
+      // Vérifier que les valeurs sont des nombres valides
+      Object.keys(validatedStats).forEach(key => {
+        if (isNaN(validatedStats[key]) || !isFinite(validatedStats[key])) {
+          validatedStats[key] = 0
+        }
+      })
+      
+      setStats(validatedStats)
       
       // Charger les mouvements récents
       const movementsData = await dashboardService.getRecentMovements()
-      setRecentMovements(movementsData)
+      // S'assurer que movementsData est un tableau
+      setRecentMovements(Array.isArray(movementsData) ? movementsData : [])
       
     } catch (err) {
       console.error('Erreur lors du chargement du dashboard:', err)
+      
+      // Réinitialiser les données en cas d'erreur
+      setStats({ totalProducts: 0, totalQuantity: 0, totalValue: 0 })
+      setRecentMovements([])
+      
       if (err.response?.status === 401) {
         error('Session expirée', 'Votre session a expiré. Veuillez vous reconnecter.')
       } else {
@@ -90,10 +111,16 @@ function Dashboard() {
    * @returns {string} Montant formaté
    */
   const formatCurrency = (amount) => {
+    // Vérifier que le montant est un nombre valide
+    const numericAmount = Number(amount)
+    if (isNaN(numericAmount) || !isFinite(numericAmount)) {
+      return '0,00 FCFA'
+    }
+    
     return new Intl.NumberFormat('fr-FR', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
-    }).format(amount) + ' FCFA'
+    }).format(numericAmount) + ' FCFA'
   }
 
   // Charger les données au montage du composant
@@ -141,7 +168,7 @@ function Dashboard() {
             </tr>
           </thead>
           <tbody>
-            ${recentMovements.map(movement => `
+            ${(Array.isArray(recentMovements) ? recentMovements : []).map(movement => `
               <tr>
                 <td>${new Date(movement.created_at).toLocaleDateString('fr-FR')}</td>
                 <td>${movement.product_name || 'N/A'}</td>
@@ -190,7 +217,7 @@ function Dashboard() {
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalProducts}</div>
+            <div className="text-2xl font-bold">{isNaN(stats.totalProducts) ? 0 : stats.totalProducts}</div>
             <p className="text-xs text-muted-foreground">
               Produits enregistrés
             </p>
@@ -203,7 +230,7 @@ function Dashboard() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalQuantity}</div>
+            <div className="text-2xl font-bold">{isNaN(stats.totalQuantity) ? 0 : stats.totalQuantity}</div>
             <p className="text-xs text-muted-foreground">
               Unités en stock
             </p>
@@ -243,7 +270,7 @@ function Dashboard() {
             <div className="flex items-center justify-center py-8">
               <div className="text-muted-foreground">Chargement des données...</div>
             </div>
-          ) : recentMovements.length === 0 ? (
+          ) : !Array.isArray(recentMovements) || recentMovements.length === 0 ? (
             <div className="flex items-center justify-center py-8">
               <div className="text-center">
                 <Activity className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
@@ -264,7 +291,7 @@ function Dashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {recentMovements.slice(0, 10).map((movement) => (
+                {(Array.isArray(recentMovements) ? recentMovements : []).slice(0, 10).map((movement) => (
                   <TableRow key={movement.id}>
                     <TableCell>
                       <div className="flex items-center">

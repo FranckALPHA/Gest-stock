@@ -185,6 +185,45 @@ Certaines routes nécessitent un token JWT dans l'en-tête `Authorization` sous 
 - **Méthode** : DELETE
 - **Accès** : Admin
 
+### Gestion des Utilisateurs
+
+#### Lister tous les utilisateurs
+- **URL** : `/users`
+- **Méthode** : GET
+- **Accès** : Admin
+
+#### Activer/Désactiver un utilisateur
+- **URL** : `/users/:id/toggle-active`
+- **Méthode** : PUT
+- **Accès** : Admin
+- **Body** :
+  ```json
+  {
+    "is_active": true
+  }
+  ```
+
+#### Activer un utilisateur
+- **URL** : `/users/:id/activate`
+- **Méthode** : PUT
+- **Accès** : Admin
+
+#### Désactiver un utilisateur
+- **URL** : `/users/:id/deactivate`
+- **Méthode** : PUT
+- **Accès** : Admin
+
+#### Modifier le mot de passe d'un utilisateur
+- **URL** : `/users/:id/password`
+- **Méthode** : PUT
+- **Accès** : Admin
+- **Body** :
+  ```json
+  {
+    "new_password": "nouveau_mot_de_passe"
+  }
+  ```
+
 ### Mouvements de Stock
 
 #### Lister tous les mouvements
