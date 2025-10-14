@@ -99,20 +99,7 @@ export const productService = {
    * @returns {Promise<Array>} Liste des produits avec stock faible
    */
   async getLowStockProducts(threshold = 10) {
-    try {
-      // Récupérer tous les produits et filtrer côté client
-      const data = await this.getAllProducts({ limit: 1000 });
-      const productsList = data.products || data;
-      
-      // Filtrer les produits avec stock faible
-      const lowStockProducts = productsList.filter(product => 
-        (product.quantity || 0) <= threshold
-      );
-      
-      return lowStockProducts;
-    } catch (error) {
-      console.error('Erreur lors de la récupération des produits en stock faible:', error);
-      return [];
-    }
+    const response = await api.get(`/products/low-stock?threshold=${threshold}`);
+    return response.data;
   }
 };
