@@ -5,6 +5,7 @@ import Login from './pages/Login.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import Products from './pages/Products.jsx'
 import Categories from './pages/Categories.jsx'
+import Suppliers from './pages/Suppliers.jsx'
 import StockMovements from './pages/StockMovements.jsx'
 import { useAuth } from './context/AuthContext.jsx'
 import { Link } from 'react-router-dom'
@@ -60,6 +61,12 @@ function Navigation() {
               className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
             >
               Catégories
+            </Link>
+            <Link 
+              to="/suppliers" 
+              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              Fournisseurs
             </Link>
             <Link 
               to="/stock-movements" 
@@ -140,6 +147,16 @@ function AppRoutes() {
           <ProtectedRoute>
             <MainLayout>
               <Categories />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/suppliers"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <Suppliers />
             </MainLayout>
           </ProtectedRoute>
         }
