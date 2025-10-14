@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext.jsx'
+import { ThemeProvider } from './context/ThemeContext.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import Login from './pages/Login.jsx'
 import Dashboard from './pages/Dashboard.jsx'
@@ -13,6 +14,7 @@ import { Link } from 'react-router-dom'
 import { Badge } from './components/ui/badge.jsx'
 import { Button } from './components/ui/button.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
+import { ThemeToggle } from './components/ThemeToggle.jsx'
 
 /**
  * Composant de navigation principal
@@ -22,12 +24,12 @@ function Navigation() {
   const { user, logout, isAdmin, isManager } = useAuth();
 
   return (
-    <nav className="border-b bg-white">
+    <nav className="border-b bg-background border-border">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo et titre */}
           <div className="flex items-center space-x-4">
-            <Link to="/" className="text-xl font-bold text-gray-900 hover:text-gray-700">
+            <Link to="/" className="text-xl font-bold text-foreground hover:text-muted-foreground transition-colors">
               Gestion de Stock
             </Link>
             {user?.role && (
@@ -48,49 +50,53 @@ function Navigation() {
           <nav className="hidden md:flex items-center space-x-6">
             <Link 
               to="/" 
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Tableau de bord
             </Link>
             <Link 
               to="/products" 
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Produits
             </Link>
             <Link 
               to="/categories" 
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Catégories
             </Link>
             <Link 
               to="/suppliers" 
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Fournisseurs
             </Link>
             <Link 
               to="/stock-movements" 
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Mouvements
             </Link>
             {isAdmin() && (
               <Link 
                 to="/users" 
-                className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
                 Utilisateurs
               </Link>
             )}
           </nav>
 
-          {/* Informations utilisateur et déconnexion */}
+          {/* Informations utilisateur, thème et déconnexion */}
           <div className="flex items-center space-x-4">
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-muted-foreground">
               <span className="font-medium">{user?.name || user?.email}</span>
             </div>
+            
+            {/* Bouton de basculement de thème */}
+            <ThemeToggle />
+            
             <Button 
               variant="outline" 
               size="sm"
@@ -203,9 +209,11 @@ function AppRoutes() {
 function App() {
   return (
     <ErrorBoundary>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </ThemeProvider>
     </ErrorBoundary>
   )
 }
