@@ -26,8 +26,10 @@ function LowStockAlerts({ threshold = 10, showHeader = true, maxItems = 5 }) {
   const loadAlerts = async () => {
     try {
       setLoading(true)
-      const data = await productService.getLowStockProducts(threshold)
-      setAlerts(data)
+      const data = await productService.getLowStockProducts()
+      // Filtrer les produits selon le seuil spécifié (côté client)
+      const filteredData = data.filter(product => (product.quantity || 0) <= threshold)
+      setAlerts(filteredData)
     } catch (err) {
       console.error('Erreur lors du chargement des alertes:', err)
       error('Erreur', 'Impossible de charger les alertes de stock faible.')

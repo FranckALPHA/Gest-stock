@@ -95,11 +95,10 @@ export const productService = {
 
   /**
    * Récupérer les produits avec stock faible
-   * @param {number} [threshold=10] - Seuil de stock faible
    * @returns {Promise<Array>} Liste des produits avec stock faible
    */
-  async getLowStockProducts(threshold = 10) {
-    const response = await api.get(`/products/low-stock?threshold=${threshold}`);
+  async getLowStockProducts() {
+    const response = await api.get('/products/low-stock');
     return response.data;
   }
 };
