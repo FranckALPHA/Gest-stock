@@ -104,13 +104,20 @@ function Products() {
   const loadFiltersData = async () => {
     try {
       const [categoriesData, suppliersData] = await Promise.all([
-        categoryService.getAllCategories(),
-        supplierService.getAllSuppliers()
+        categoryService.getAllCategories({ limit: 1000 }),
+        supplierService.getAllSuppliers({ limit: 1000 })
       ])
-      setCategories(categoriesData)
-      setSuppliers(suppliersData)
+      
+      // Extraire les données des réponses avec pagination
+      const categoriesList = categoriesData.categories || categoriesData
+      const suppliersList = suppliersData.suppliers || suppliersData
+      
+      setCategories(Array.isArray(categoriesList) ? categoriesList : [])
+      setSuppliers(Array.isArray(suppliersList) ? suppliersList : [])
     } catch (err) {
       console.error('Erreur lors du chargement des données de filtres:', err)
+      setCategories([])
+      setSuppliers([])
     }
   }
 
@@ -370,7 +377,7 @@ function Products() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">Aucune catégorie</SelectItem>
-                      {categories.map((category) => (
+                      {Array.isArray(categories) && categories.map((category) => (
                         <SelectItem key={category.id} value={category.id.toString()}>
                           {category.name}
                         </SelectItem>
@@ -388,7 +395,7 @@ function Products() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">Aucun fournisseur</SelectItem>
-                      {suppliers.map((supplier) => (
+                      {Array.isArray(suppliers) && suppliers.map((supplier) => (
                         <SelectItem key={supplier.id} value={supplier.id.toString()}>
                           {supplier.name}
                         </SelectItem>
@@ -511,7 +518,7 @@ function Products() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Toutes les catégories</SelectItem>
-                  {categories.map((category) => (
+                  {Array.isArray(categories) && categories.map((category) => (
                     <SelectItem key={category.id} value={category.id.toString()}>
                       {category.name}
                     </SelectItem>
@@ -529,7 +536,7 @@ function Products() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tous les fournisseurs</SelectItem>
-                  {suppliers.map((supplier) => (
+                  {Array.isArray(suppliers) && suppliers.map((supplier) => (
                     <SelectItem key={supplier.id} value={supplier.id.toString()}>
                       {supplier.name}
                     </SelectItem>
@@ -736,7 +743,7 @@ function Products() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">Aucune catégorie</SelectItem>
-                  {categories.map((category) => (
+                  {Array.isArray(categories) && categories.map((category) => (
                     <SelectItem key={category.id} value={category.id.toString()}>
                       {category.name}
                     </SelectItem>
@@ -754,7 +761,7 @@ function Products() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">Aucun fournisseur</SelectItem>
-                  {suppliers.map((supplier) => (
+                  {Array.isArray(suppliers) && suppliers.map((supplier) => (
                     <SelectItem key={supplier.id} value={supplier.id.toString()}>
                       {supplier.name}
                     </SelectItem>
