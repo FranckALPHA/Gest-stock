@@ -178,7 +178,6 @@ function Users() {
     }
   }, [isAdmin])
 
-
   // Vérification des permissions
   if (!isAdmin()) {
     return (
