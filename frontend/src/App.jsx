@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { ThemeProvider } from './context/ThemeContext.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
@@ -23,6 +23,18 @@ import { ThemeToggle } from './components/ThemeToggle.jsx'
  */
 function Navigation() {
   const { user, logout, isAdmin, isManager } = useAuth();
+  const location = useLocation();
+
+  /**
+   * Détermine si un lien de navigation est actif
+   * @param {string} path - Chemin à vérifier
+   * @returns {boolean} - True si le lien est actif
+   */
+  const isActive = (path) => {
+    if (path === '/' && location.pathname === '/') return true;
+    if (path !== '/' && location.pathname.startsWith(path)) return true;
+    return false;
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b bg-background border-border">
@@ -51,40 +63,82 @@ function Navigation() {
           <nav className="hidden md:flex items-center space-x-6">
             <Link 
               to="/" 
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className={`text-sm font-medium transition-colors relative ${
+                isActive('/') 
+                  ? 'text-primary font-semibold' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
             >
               Tableau de bord
+              {isActive('/') && (
+                <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
+              )}
             </Link>
             <Link 
               to="/products" 
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className={`text-sm font-medium transition-colors relative ${
+                isActive('/products') 
+                  ? 'text-primary font-semibold' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
             >
               Produits
+              {isActive('/products') && (
+                <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
+              )}
             </Link>
             <Link 
               to="/categories" 
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className={`text-sm font-medium transition-colors relative ${
+                isActive('/categories') 
+                  ? 'text-primary font-semibold' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
             >
               Catégories
+              {isActive('/categories') && (
+                <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
+              )}
             </Link>
             <Link 
               to="/suppliers" 
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className={`text-sm font-medium transition-colors relative ${
+                isActive('/suppliers') 
+                  ? 'text-primary font-semibold' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
             >
               Fournisseurs
+              {isActive('/suppliers') && (
+                <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
+              )}
             </Link>
             <Link 
               to="/stock-movements" 
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className={`text-sm font-medium transition-colors relative ${
+                isActive('/stock-movements') 
+                  ? 'text-primary font-semibold' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
             >
               Mouvements
+              {isActive('/stock-movements') && (
+                <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
+              )}
             </Link>
             {isAdmin() && (
               <Link 
                 to="/users" 
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                className={`text-sm font-medium transition-colors relative ${
+                  isActive('/users') 
+                    ? 'text-primary font-semibold' 
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
               >
                 Utilisateurs
+                {isActive('/users') && (
+                  <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
+                )}
               </Link>
             )}
           </nav>
@@ -98,9 +152,16 @@ function Navigation() {
             {/* Lien vers le profil */}
             <Link 
               to="/profile" 
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className={`text-sm font-medium transition-colors relative ${
+                isActive('/profile') 
+                  ? 'text-primary font-semibold' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
             >
               Profil
+              {isActive('/profile') && (
+                <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
+              )}
             </Link>
             
             {/* Bouton de basculement de thème */}
