@@ -178,6 +178,12 @@ function Users() {
     }
   }, [isAdmin])
 
+  // Debug pour vérifier les valeurs
+  useEffect(() => {
+    console.log('Current user:', currentUser)
+    console.log('Current user ID:', currentUser?.id)
+  }, [currentUser])
+
   // Vérification des permissions
   if (!isAdmin()) {
     return (
@@ -249,7 +255,11 @@ function Users() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users.map((user) => (
+                  {users.map((user) => {
+                    // Debug pour chaque utilisateur
+                    console.log(`User ${user.id} (${user.username}): role=${user.role}, isAdmin=${user.role === 'admin'}, isCurrentUser=${user.id === currentUser?.id}, shouldRestrict=${user.role === 'admin' && user.id !== currentUser?.id}`)
+                    
+                    return (
                     <TableRow key={user.id}>
                       <TableCell>
                         <div className="flex items-center gap-2">
@@ -324,7 +334,8 @@ function Users() {
                         </div>
                       </TableCell>
                     </TableRow>
-                  ))}
+                    )
+                  })}
                 </TableBody>
               </Table>
             </div>
