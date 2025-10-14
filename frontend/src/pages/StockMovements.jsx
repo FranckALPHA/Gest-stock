@@ -67,11 +67,13 @@ function StockMovements() {
    */
   const loadProducts = async () => {
     try {
-      const data = await productService.getAllProducts()
-      setProducts(data)
+      const data = await productService.getAllProducts({ limit: 1000 })
+      const productsList = data.products || data
+      setProducts(Array.isArray(productsList) ? productsList : [])
     } catch (err) {
       console.error('Erreur lors du chargement des produits:', err)
       error('Erreur', 'Impossible de charger la liste des produits.')
+      setProducts([]) // S'assurer que products est toujours un tableau
     }
   }
 
@@ -179,7 +181,7 @@ function StockMovements() {
                     <SelectValue placeholder="Sélectionner un produit" />
                   </SelectTrigger>
                   <SelectContent>
-                    {products.map((product) => (
+                    {Array.isArray(products) && products.map((product) => (
                       <SelectItem key={product.id} value={product.id.toString()}>
                         {product.name} - Stock: {product.quantity || 0}
                       </SelectItem>
