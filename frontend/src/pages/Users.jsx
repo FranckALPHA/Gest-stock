@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from '../components/ui/alert'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../hooks/useToast'
 import { userService } from '../services/user.api.js'
-import { Users, UserCheck, UserX, Key, Eye, EyeOff, Shield, User } from 'lucide-react'
+import { Users as UsersIcon, UserCheck, UserX, Key, Eye, EyeOff, Shield, User } from 'lucide-react'
 
 /**
  * Page de gestion des utilisateurs (Admin uniquement)
@@ -208,7 +208,7 @@ function Users() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Users className="w-8 h-8" />
+            <UsersIcon className="w-8 h-8" />
             Gestion des Utilisateurs
           </h1>
           <p className="text-muted-foreground mt-2">
