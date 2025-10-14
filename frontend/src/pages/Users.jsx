@@ -178,11 +178,6 @@ function Users() {
     }
   }, [isAdmin])
 
-  // Debug pour vérifier les valeurs
-  useEffect(() => {
-    console.log('Current user:', currentUser)
-    console.log('Current user ID:', currentUser?.id)
-  }, [currentUser])
 
   // Vérification des permissions
   if (!isAdmin()) {
@@ -255,11 +250,7 @@ function Users() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users.map((user) => {
-                    // Debug pour chaque utilisateur
-                    console.log(`User ${user.id} (${user.username}): role=${user.role}, isAdmin=${user.role === 'admin'}, isCurrentUser=${user.id === currentUser?.id}, shouldRestrict=${user.role === 'admin' && user.id !== currentUser?.id}`)
-                    
-                    return (
+                  {users.map((user) => (
                     <TableRow key={user.id}>
                       <TableCell>
                         <div className="flex items-center gap-2">
@@ -294,9 +285,9 @@ function Users() {
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
                           {/* Vérifier si l'utilisateur actuel peut modifier cet utilisateur */}
-                          {user.role === 'admin' && user.id !== currentUser?.id ? (
+                          {(user.role === 'admin' && user.id !== currentUser?.id) || user.id === currentUser?.id ? (
                             <div className="text-xs text-muted-foreground">
-                              Accès restreint
+                              {user.id === currentUser?.id ? 'Utilisez votre page profil' : 'Accès restreint'}
                             </div>
                           ) : (
                             <>
@@ -334,8 +325,7 @@ function Users() {
                         </div>
                       </TableCell>
                     </TableRow>
-                    )
-                  })}
+                  ))}
                 </TableBody>
               </Table>
             </div>
