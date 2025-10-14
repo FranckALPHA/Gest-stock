@@ -25,7 +25,7 @@ function Navigation() {
   const { user, logout, isAdmin, isManager } = useAuth();
 
   return (
-    <nav className="border-b bg-background border-border">
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b bg-background border-border">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo et titre */}
@@ -130,7 +130,7 @@ function MainLayout({ children }) {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <main className="container mx-auto py-6 px-4">
+      <main className="container mx-auto py-6 px-4 pt-24">
         {children}
       </main>
     </div>
